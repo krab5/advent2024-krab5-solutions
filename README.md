@@ -50,4 +50,14 @@ sensible wrapping (not that it bothers me, this is how you should do it in any
 way).
 
 
+## Day 02: report checking
+
+A nice little problem; I solve part 2 with a kinda brute force approach,
+noticing that the state space was reasonably small (sequence of no more than a
+dozen of numbers or so). Had it not been the case, I would have tried to find
+interesting heuristics to skim down solution browsing, but oh well...
+
+
+
+
 

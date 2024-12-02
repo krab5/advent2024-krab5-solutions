@@ -5,6 +5,7 @@ object Day01 {
   /**
    * Builds a pair of sequences based on a tabulated lines (`left    right`).
    *
+   * @constructor create the input provider from the given line provider
    * @param input input provider delivering the list of lines to be used
    */
   class DualListInputProvider[Input](var input: InputProvider[Input,List[String]]) extends InputProvider[Input,(Seq[Int],Seq[Int])]:
