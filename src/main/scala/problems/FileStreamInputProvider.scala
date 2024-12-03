@@ -66,18 +66,12 @@ class FileStreamInputProvider extends InputProvider[String,Stream[Char]]:
      *
      * @return the two stream duplicata
      */
-    override def fork: (Stream[Char],Stream[Char]) = {
-      def mkReader: ReaderStream = {
-        val rd = new ReaderStream(this.file)
-        rd.reader.skip(this.nread)
-        rd.nread = this.nread
-        rd.eosReached = this.eosReached
-        return rd
-      }
-      val one = mkReader
-      val two = mkReader
-      this.reader.close()
-      return (one,two)
+    override def fork(): Stream[Char] = {
+      val rd = new ReaderStream(this.file)
+      rd.reader.skip(this.nread)
+      rd.nread = this.nread
+      rd.eosReached = this.eosReached
+      rd
     }
 
   /** Inner file variable */
