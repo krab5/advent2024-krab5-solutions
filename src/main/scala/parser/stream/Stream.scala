@@ -1,5 +1,6 @@
 package parser.stream
 
+
 /**
  * A typeclass for types to resemble some sort of characters. This is mostly used for 
  * StateStream where newlines need to be taken into account for updating the state.
@@ -37,17 +38,40 @@ trait Stream[Sym]:
   def eos: Boolean
 
   /**
-   * Create two duplicata of this stream. The original stream may become 
-   * invalid after that, and shall not be used.
+   * Create a duplicate (a "fork") of this stream. This allows to "revert" back
+   * to a point in the stream while keeping the statefull nature of implementations
+   * of this stream.
    *
-   * Fork does not consume anything, meaning the resulting streams must be
-   * in the exact same state as the original stream when forking. They are also
-   * supposed to be non-interferring, meaning reading one should not impact
-   * the state of the other.
+   * Fork does not consume anything, meaning the resulting stream must be
+   * in the exact same state as the original stream when forking. The resulting
+   * stream and this one are also supposed to be non-interferring, meaning reading
+   * one should not impact the state of the other (this should be taken into consideration
+   * if the streams are sharing data).
    *
-   * @return duplication of the current stream
+   * @return duplicate of the current stream
    */
-  def fork: (Stream[Sym],Stream[Sym])
+  def fork(): Stream[Sym]
+
+  /**
+   * A simple implementation of [[toString]] that shows a few characters from the head
+   * and then either the end of the stream if there are no more characters or an ellipsis (`...`)
+   * to signify that there are more after that.
+   *
+   * @return string representation of the stream; this uses the `toString` function of the `Sym` type
+   */
+  override def toString: String = {
+    val limit : Int = 5
+    var self = this.fork()
+    def content(n : Int, acc: String): String = {
+      if (n < limit) then {
+        self.eat match {
+          case Some(x) => content(n + 1, acc ++ x.toString)
+          case None => acc
+        }
+      } else { acc ++ "..." }
+    }
+    content(0, "")
+  }
   
 /**
  * Companion opbject for Stream.
@@ -95,11 +119,8 @@ object Stream {
        *
        * @return stream duplication, with exact same associated location
        */
-      override def fork: (Stream[Sym],Stream[Sym]) = 
-        wrapped.fork match {
-          case (one,two) =>
-            (new StateStream(this.state.copy(), one), new StateStream(this.state.copy(), two))
-        }
+      override def fork(): Stream[Sym] = 
+        new StateStream(this.state.copy(), wrapped.fork())
 
     /**
      * A wrapper class that drops symbols that are considered useless (thereby "ignoring" said symbols).
@@ -137,10 +158,8 @@ object Stream {
        *
        * @return stream duplication
        */
-      override def fork: (Stream[Sym],Stream[Sym]) =
-        wrapped.fork match {
-          case (one,two) => (GobbleStream(one, ignore),GobbleStream(two, ignore))
-        }
+      override def fork(): Stream[Sym] =
+        GobbleStream(wrapped.fork(), ignore)
 
     /**
      * Given instance of [[CharLike]] for characters (which is the most likely to be used)

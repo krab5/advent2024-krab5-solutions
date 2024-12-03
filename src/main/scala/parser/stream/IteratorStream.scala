@@ -7,7 +7,7 @@ package parser.stream
  * @constructor build the iterator stream from the given iterator
  * @param iterator iterator to use in the stream
  */
-class IteratorStream[Sym](val iterator: Iterator[Sym]) extends Stream[Sym]:
+case class IteratorStream[Sym](var iterator: Iterator[Sym]) extends Stream[Sym]:
   /**
    * Implementation of [[Stream.eat]] that uses [[Iterator.next]] to advance the 
    * iterator and retrieve a value (if it has one).
@@ -35,10 +35,25 @@ class IteratorStream[Sym](val iterator: Iterator[Sym]) extends Stream[Sym]:
    *
    * @return two independant IteratorStream
    */
-  override def fork: (Stream[Sym],Stream[Sym]) =
-    iterator.duplicate match {
-      case (it1,it2) => (IteratorStream(it1),IteratorStream(it2))
-    }
+  override def fork(): Stream[Sym] = {
+    val its = iterator.duplicate
+    this.iterator = its(0)
+    IteratorStream(its(1))
+  }
+
+/**
+ * Companion object
+ */
+object IteratorStream {
+  /**
+   * Builds an [[IteratorStream]] using an [[Iterable]] object.
+   *
+   * @param it object with the [[Iterable]] trait
+   * @return the iterator stream for `it.iterator`
+   */
+  def apply[Sym](it: Iterable[Sym]): IteratorStream[Sym] = IteratorStream(it.iterator)
+}
+
 
 
 

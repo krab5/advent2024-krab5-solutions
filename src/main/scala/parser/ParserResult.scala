@@ -155,6 +155,18 @@ case class Failure[Err,Sym,T]() extends ParserResult[Err,Sym,T]
 case class Error[Err,Sym,T](val e: Err) extends ParserResult[Err,Sym,T]
 
 
+object ParserResult {
+  def success[Err,Sym,T](r: T): Stream[Sym] => ParserResult[Err,Sym,T] = st => Success(st, r)
+  def failure[Err,Sym,T](): Stream[Sym] => ParserResult[Err,Sym,T] = _ => Failure()
+  def error[Err,Sym,T](err: Err): Stream[Sym] => ParserResult[Err,Sym,T] = _ => Error(err)
+
+  given toOption[Err,Sym,T]: Conversion[ParserResult[Err,Sym,T],Option[T]] with
+    def apply(r: ParserResult[Err,Sym,T]): Option[T] = r match {
+      case Success(_, r) => Some(r)
+      case _ => None
+    }
+}
+
 
 
 

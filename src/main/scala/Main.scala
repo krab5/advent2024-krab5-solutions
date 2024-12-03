@@ -12,10 +12,12 @@ import problems.*
  */
 object Main {
   val problems: List[Executor[_,_,_]] = List(
-      new Executor(Day01.Part1, FixedInputProvider("inputs/day01-1.txt")),
-      new Executor(Day01.Part2, FixedInputProvider("inputs/day01-1.txt")),
-      new Executor(Day02.Part1, FixedInputProvider("inputs/day02.txt")),
-      new Executor(Day02.Part2, FixedInputProvider("inputs/day02.txt")),
+      //new Executor(Day01.Part1, FixedInputProvider("inputs/day01-1.txt")),
+      //new Executor(Day01.Part2, FixedInputProvider("inputs/day01-1.txt")),
+      //new Executor(Day02.Part1, FixedInputProvider("inputs/day02.txt")),
+      //new Executor(Day02.Part2, FixedInputProvider("inputs/day02.txt")),
+      new Executor(Day03.Part1, FixedInputProvider("inputs/day03.txt")),
+      new Executor(Day03.Part2, FixedInputProvider("inputs/day03.txt")),
     )
 
   def main(args: Array[String]) = {

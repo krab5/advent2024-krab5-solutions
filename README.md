@@ -58,6 +58,24 @@ dozen of numbers or so). Had it not been the case, I would have tried to find
 interesting heuristics to skim down solution browsing, but oh well...
 
 
+## Day 03: scrambled programs
+
+I KNEW IT. My parsing library was gonna be used sooner or later; it was a good
+occasion to see its usage and limits.
+
+One first important lesson I learned is that it is primordial to write tail
+recursive functions whenever possible. I mean this is true for every functional
+programming languages, but Scala suffers from the object layer and the JVM,
+meaning resource can be sparse and memory usage (for storing objects) scales up
+pretty bad...
+
+I also lost a bunch of time on part 2 because I did not notice the example
+provided was not the same as the first one, so I was finding a different result
+and spent too much time fixing a code that was correct =.=
+
+Anyway what's done is done. Hurray for parser combinators.
+
+
 
 
 

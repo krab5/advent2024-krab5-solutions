@@ -45,14 +45,12 @@ case class SplitStream[Sym](val inner: Stream[Sym], val doSplit: Sym => Boolean)
 
   /**
    * Implementation of [[Stream.fork]] that forks the wrapped stream and
-   * re-wrap them in a SplitStream with the same splitting function.
+   * re-wrap it in a SplitStream with the same splitting function.
    *
-   * @return stream duplications
+   * @return stream duplicate
    */
-  override def fork: (Stream[Seq[Sym]],Stream[Seq[Sym]]) =
-    inner.fork match {
-      case (one,two) => (SplitStream(one, doSplit),SplitStream(two, doSplit))
-    }
+  override def fork(): Stream[Seq[Sym]] =
+    SplitStream(inner.fork(), doSplit)
 
 /** SplitStream companion object */
 object SplitStream {

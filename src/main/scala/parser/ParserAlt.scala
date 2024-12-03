@@ -18,7 +18,7 @@ import stream.Stream
  */
 case class ParserAlt[Err,Sym,R](val left: Parser[Err,Sym,R], val right: Parser[Err,Sym,R]) extends Parser[Err,Sym,R]:
   override def run(s: Stream[Sym]): ParserResult[Err,Sym,R] =
-    left.run(s) match {
+    left.run(s.fork()) match {
       case Failure() => right.run(s)
       case x => x
     }

@@ -78,6 +78,32 @@ abstract class Parser[Err,Sym,R]:
     PMap(this, fun)
 
   /**
+   * Run a parser as long as it succeeds and accumulate the result using the provided function.
+   * This version of fold is the "proper" monadic fold for parsers, with a combining function and a result
+   * that allow to return a parser result (i.e., that are "parser-like") which enables writing much more
+   * subtle parsers.
+   *
+   * @param f combining function (which may return [[Success]] or [[Failure]] or [[Error]])
+   * @param z base case (calculated from a stream as it may return [[Success]], which requires one)
+   * @param w a "wrap-up" function that transform the result with the accumulator into the final
+   * parser result
+   * @return a new parser that run this until it fails or until the combining function fails
+   */
+  def pfold[S,Acc](f: (Stream[Sym],R,Acc) => ParserResult[Err,Sym,Acc])(z: Stream[Sym] => ParserResult[Err,Sym,Acc])(w: ParserResult[Err,Sym,Acc] => ParserResult[Err,Sym,S]): FoldParser[Err,Sym,R,S,Acc] =
+    FoldParser[Err,Sym,R,S,Acc](this, f, z, w)
+
+  /**
+   * Run a parser as long as it succeeds and accumulate the result using the provided function.
+   * This version is an alias of the other with [[identity]] as wrap-up function.
+   *
+   * @param f combining function
+   * @param z base case
+   * @return a new parser that run this until it fails or until the combining function fails
+   */
+  def pfold[Acc](f: (Stream[Sym],R,Acc) => ParserResult[Err,Sym,Acc])(z: Stream[Sym] => ParserResult[Err,Sym,Acc]): FoldParser[Err,Sym,R,Acc,Acc] =
+    this.pfold(f)(z)(identity)
+
+  /**
    * Run a parser as long as it succeeds, and accumulate the result using the provided function.
    * If the parser fails on the first iteration, returns z.
    *
@@ -88,8 +114,8 @@ abstract class Parser[Err,Sym,R]:
    * @return a new parser that will run this until it fails, and combine the result of each successful run
    * to an accumulator, which initial value is z
    */
-  def fold[Acc](f: (R,Acc) => Acc)(z: Acc): Parser[Err,Sym,Acc] =
-    FoldParser[Err,Sym,R,Acc](this, f, z)
+  def fold[Acc](f: (R,Acc) => Acc)(z: Acc): FoldParser[Err,Sym,R,Acc,_] =
+    FoldParser.wrapFold[Err,Sym,R,Acc](this, f, z)
 
   /**
    * Run a parser as long as it succeeds, and accumulate the result using the provided function.
@@ -99,8 +125,8 @@ abstract class Parser[Err,Sym,R]:
    * @return a new parser that will run this until it fails and combine the result of each successful run
    * to an accumulator; if this fails on the first run, the returned parser will fail as well
    */
-  def fold1(f: (R,R) => R): Parser[Err,Sym,R] =
-    this >>= (r => FoldParser[Err,Sym,R,R](this, f, r))
+  def fold1(f: (R,R) => R): FoldParser[Err,Sym,R,R,_] =
+    FoldParser.wrapFold1[Err,Sym,R](this, f)
 
   /**
    * Repeat a parser as long as it succeeds and store the result in a sequence. The given parser might fail on
@@ -110,7 +136,7 @@ abstract class Parser[Err,Sym,R]:
    * each successful run. If this fails on the first run, the returned parser will succeed, with the empty
    * sequence as result.
    */
-  def repeat: Parser[Err,Sym,Seq[R]] =
+  def repeat: FoldParser[Err,Sym,R,Seq[R],_] =
     this.fold[Seq[R]]((r : R, acc : Seq[R]) => acc :+ r)(Seq.empty)
 
   /**
@@ -121,8 +147,9 @@ abstract class Parser[Err,Sym,R]:
    * @return a new parser that repeats running this until it fails and returns a squence of the result of each
    * successful run. If this fails on the first run, the returner parser will fail as well.
    */
-  def repeat1: Parser[Err,Sym,Seq[R]] =
-    (this ~> (r => r +: Seq.empty)).fold1((r1,r2) => r1 ++ r2)
+  def repeat1: FoldParser[Err,Sym,Seq[R],Seq[R],_] =
+    (this ~> (Seq[R](_))).fold1((r1,r2) => r1 ++ r2)
+
 
 /**
  * Parser companion object.
@@ -164,6 +191,34 @@ object Parser {
    * @return the parser that succeeds iff the end of stream was reached
    */
   def isEos[Err,Sym]: Parser[Err,Sym,Unit] = ParserEOS()
+
+  /**
+   * Create the parser that consumes 1 symbol and returns unit (hence skipping in the stream).
+   * The parser fails if the stream has already reached its end
+   *
+   * @return the parser that skips a symbol in the stream and returns unit
+   */
+  def skip[Err,Sym]: Parser[Err,Sym,Unit] = Skip(1)
+
+  /**
+   * Create the parser that consumes `n` symbols and returns unit (hence skipping in the stream).
+   * The parser fails if the stream cannot provide at least `n` symbols.
+   *
+   * @param n number of positions to skip
+   * @return the parser that skips `n` symbols in the stream and returns unit
+   */
+  def skip[Err,Sym](n: Int): Parser[Err,Sym,Unit] = Skip(n)
+
+  /**
+   * Create the parser that matches the provided word. The resulting parser succeeds if the head
+   * of the stream is composed of exactly the same letter as `w`, and returns `w` as a result.
+   * No check is performed on boundaries (i.e., `word("abc")` matches the stream `<<a,b,c,t,z,g,e,f...>>`).
+   *
+   * @param w the word that must be parsed
+   * @return the parser that matches the sub-stream composed of the letters of `w`
+   */
+  def word[Err](w: String): Parser[Err,Char,String] =
+    w.map(c => Parser.is[Err,Char](c)).reduceLeft(_ >> _) >> Parser.ret(w)
 
   /**
    * Utility object, mainly for converting non-parsers to parsers
