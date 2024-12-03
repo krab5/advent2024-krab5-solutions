@@ -113,7 +113,7 @@ object FoldParser {
    * 
    * The wrap-up function is set to [[identity]].
    *
-   * @param parser wrapped parser to be used in the [[FoldingParser]]
+   * @param parser wrapped parser to be used in the [[FoldParser]]
    * @param foldfun combining function (accumulation results from `parser`)
    * @param foldzero base case for the fold
    * @return the resulting parser
@@ -126,7 +126,7 @@ object FoldParser {
    * the inner parser has been run at least once.
    * This is not implemented using [[FoldParser.atLeast]] (for marginal performance gain...).
    *
-   * @param parser the wrapped parser to be used in the [[FoldingParser]]
+   * @param parser the wrapped parser to be used in the [[FoldParser]]
    * @param foldfun the combining function
    * @return the resulting parser
    */
