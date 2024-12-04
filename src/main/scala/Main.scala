@@ -16,8 +16,10 @@ object Main {
       //new Executor(Day01.Part2, FixedInputProvider("inputs/day01-1.txt")),
       //new Executor(Day02.Part1, FixedInputProvider("inputs/day02.txt")),
       //new Executor(Day02.Part2, FixedInputProvider("inputs/day02.txt")),
-      new Executor(Day03.Part1, FixedInputProvider("inputs/day03.txt")),
-      new Executor(Day03.Part2, FixedInputProvider("inputs/day03.txt")),
+      //new Executor(Day03.Part1, FixedInputProvider("inputs/day03.txt")),
+      //new Executor(Day03.Part2, FixedInputProvider("inputs/day03.txt")),
+      new Executor(Day04.Part1, FixedInputProvider("inputs/day04.txt")),
+      new Executor(Day04.Part2, FixedInputProvider("inputs/day04.txt")),
     )
 
   def main(args: Array[String]) = {

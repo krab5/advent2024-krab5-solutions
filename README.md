@@ -76,6 +76,22 @@ and spent too much time fixing a code that was correct =.=
 Anyway what's done is done. Hurray for parser combinators.
 
 
+## Day 04: Word searching
+
+Ah yeah, the first challenge forcing me to write stuff for handling grids... I
+should have seen it coming tbh. With my mild dyslexia and tired mind, I tend to
+be confused by integer bounds (inclusive/exclusive, etc.). This time, I devised
+a purely relative approach, based on cumulated indirection of positions.
+
+This really saved me a headache, I think.
+
+As often, I spent more time writing code for handling grids than solving the
+problem itself (although it was fun to do so). I was a bit afraid for the second
+part, I truly thought it was gonna be something like "consider the most amount
+of XMAS you can find if each letter can be used in only one pattern", which
+would have been TIRESOME; but it is only day 4 I suppose.
+
+
 
 
 

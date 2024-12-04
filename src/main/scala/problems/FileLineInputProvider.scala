@@ -19,7 +19,7 @@ class FileLineInputProvider extends InputProvider[String,List[String]]:
    * till the end, recording every line in the internal state, in order.
    *
    * @param input file name to load
-   * @throws FileNotFoundException if the file has not been found or cannot be read
+   * @throws java.io.FileNotFoundException if the file has not been found or cannot be read
    */
   override def setup(input: String): Unit = {
     val file = new File(input)

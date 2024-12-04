@@ -36,4 +36,65 @@ trait InputProvider[Input,Data]:
   def retrieve(): Data
 
 
+/**
+ * Companion object for InputProvider, with convenient wrappers.
+ */
+object InputProvider:
+  /**
+   * Creates an [[InputProvider]] from the given one `p`, so that when data is retrieved, it is passed
+   * through the transformation function `f` (hence realizing a covariant map on the provider, sort of).
+   *
+   * @param f transformation to be applied to the data retrieved from `p`
+   * @param p input provider that serves as a base
+   * @return an [[InputProvider]] that delegates calls to `p` but post-processes the data retrieved from it
+   * using `f`
+   */
+  def map[Input,DataA,DataB](f: DataA => DataB)(p: InputProvider[Input,DataA]): InputProvider[Input,DataB] = {
+    new InputProvider[Input,DataB] {
+      override def setup(input: Input): Unit = p.setup(input)
+      override def retrieve(): DataB = f(p.retrieve())
+    }
+  }
+
+  /**
+   * Creates an [[InputProvider]] from the given one `p`, so that when `p` is set up, the input that is passed
+   * to id comes from a transformation function `f` (thereby realizing a contravariant map on the provider).
+   *
+   * This is useful for adapting inputs between several providers, typically.
+   *
+   * @param f transformation to be applied on the data given to `setup` before passing it down to `p`
+   * @param p input provider that serves as a base
+   * @return an [[InputProvider]] that delegates calls to `p` but pre-process the input in `setup` using the
+   * `f`
+   */
+  def contramap[InputA,InputB,Data](f: InputB => InputA)(p: InputProvider[InputA,Data]): InputProvider[InputB,Data] = {
+    new InputProvider[InputB,Data] {
+      override def setup(input: InputB): Unit = p.setup(f(input))
+      override def retrieve(): Data = p.retrieve()
+    }
+  }
+
+  /**
+   * Creates an [[InputProvider]] wrapping another one `p`, where the calculation of what needs to be
+   * retrieved is done during `setup` and stored in an internal state, which is simply read when
+   * `retrieve` is called.
+   *
+   * This is a simple way of improving performance when `retrieve` is called numerous times.
+   *
+   * @param p the base input provider
+   * @return an [[InputProvider]] which `retrieve` returns the same thing as `p`, except it is not
+   * recalculated on each call.
+   */
+  def storage[Input,Data](p: InputProvider[Input,Data]): InputProvider[Input,Data] = {
+    new InputProvider[Input,Data] {
+      var state : Option[Data] = None
+      override def setup(input: Input): Unit = {
+        p.setup(input)
+        state = Some(p.retrieve())
+      }
+      override def retrieve(): Data = state.get
+    }
+  }
+
+
 
