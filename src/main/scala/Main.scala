@@ -18,8 +18,11 @@ object Main {
       //new Executor(Day02.Part2, FixedInputProvider("inputs/day02.txt")),
       //new Executor(Day03.Part1, FixedInputProvider("inputs/day03.txt")),
       //new Executor(Day03.Part2, FixedInputProvider("inputs/day03.txt")),
-      new Executor(Day04.Part1, FixedInputProvider("inputs/day04.txt")),
-      new Executor(Day04.Part2, FixedInputProvider("inputs/day04.txt")),
+      //new Executor(Day04.Part1, FixedInputProvider("inputs/day04.txt")),
+      //new Executor(Day04.Part2, FixedInputProvider("inputs/day04.txt")),
+      new Executor(Day05.Part1, FixedInputProvider("inputs/day05-test.txt")),
+      new Executor(Day05.Part1.Fast, FixedInputProvider("inputs/day05.txt")),
+      new Executor(Day05.Part2, FixedInputProvider("inputs/day05.txt")),
     )
 
   def main(args: Array[String]) = {

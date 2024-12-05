@@ -76,7 +76,7 @@ and spent too much time fixing a code that was correct =.=
 Anyway what's done is done. Hurray for parser combinators.
 
 
-## Day 04: Word searching
+## Day 04: word searching
 
 Ah yeah, the first challenge forcing me to write stuff for handling grids... I
 should have seen it coming tbh. With my mild dyslexia and tired mind, I tend to
@@ -91,6 +91,17 @@ part, I truly thought it was gonna be something like "consider the most amount
 of XMAS you can find if each letter can be used in only one pattern", which
 would have been TIRESOME; but it is only day 4 I suppose.
 
+
+## Day 05: report updates
+
+First challenge where I only had to code specific things for the challenge and
+no extend the base code I use. The challenge was not really hard in the end; I
+was afraid for part two that there would be cycles in rules leading to updates
+that would not be trivial to fix, but it was not the case (good).
+
+I wrote my code to be kind of efficient, I do not think that was necessary in
+the end; it turns out the size of the input is not massive... But it was fun
+nonetheless :>
 
 
 

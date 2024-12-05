@@ -6,6 +6,8 @@ import java.io.BufferedReader
 import java.io.FileReader
 import java.io.FileNotFoundException
 
+import scala.annotation.tailrec
+
 /**
  * Convenient input provider that extracts a list of lines from a given file.
  * The input for this provider is the path to the file to be loaded.
@@ -27,12 +29,13 @@ class FileLineInputProvider extends InputProvider[String,List[String]]:
       throw new FileNotFoundException(s"File $input could not be found or is not readable")
     }
     var reader = new BufferedReader(new FileReader(file))
-    def line(): List[String] = Option[String](reader.readLine()) match {
-      case None => Nil
-      case Some(l) => l :: line()
+    @tailrec
+    def line(acc : List[String]): List[String] = Option[String](reader.readLine()) match {
+      case None => acc.reverse
+      case Some(l) => line(l :: acc)
     }
 
-    content = line()
+    content = line(List())
     reader.close()
   }
 

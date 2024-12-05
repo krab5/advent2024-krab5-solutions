@@ -1,7 +1,7 @@
 name := "Advent of code 2024"
 version := "0.0.1"
 
-scalacOptions ++= Seq("-explain", "-feature")
+scalacOptions ++= Seq("-explain", "-feature", "-deprecation")
 
 Compile / doc / target := file("doc")
 Compile / doc / scalacOptions ++= Seq("-project", "AoC-2024", "-groups")
